@@ -15,7 +15,7 @@ class TreeSearch:
         return []
 
     def _take_action(self, path, action):
-        return path.path_appending(action.node)
+        return path.path_appending(action.node, action.cost)
 
     def search(self, start, goal):
         initial_path = Path([start])

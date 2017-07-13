@@ -5,7 +5,15 @@ from node_search.tree_search import TreeSearch
 
 class BreathFirstSearch(TreeSearch):
     def _remove_choice(self, frontier):
-        return frontier.pop(0)
+        shortest = frontier[0]
+
+        for path in frontier:
+            if path.cost < shortest.cost:
+                shortest = path
+
+        frontier.remove(shortest)
+
+        return shortest
 
     def _goal_test(self, node, goal):
         return node == goal
@@ -13,7 +21,8 @@ class BreathFirstSearch(TreeSearch):
     def _get_actions(self, node, frontier):
         actions = []
 
-        for neighbor in node.get_neighbors():
+        for connection in node.connections:
+            neighbor = connection.end
             should_add = True
 
             for frontier_path in frontier:
@@ -22,7 +31,7 @@ class BreathFirstSearch(TreeSearch):
                     break
 
             if should_add:
-                actions.append(Action(neighbor))
+                actions.append(Action(neighbor, connection.cost))
 
         return actions
 
