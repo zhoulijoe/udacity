@@ -1,9 +1,9 @@
+from node_search.graph_search import GraphSearch
 from node_search.map_data import MapData
 from node_search.models import Action
-from node_search.tree_search import TreeSearch
 
 
-class BreathFirstSearch(TreeSearch):
+class UniformCostSearch(GraphSearch):
     def _remove_choice(self, frontier):
         shortest = frontier[0]
 
@@ -18,20 +18,17 @@ class BreathFirstSearch(TreeSearch):
     def _goal_test(self, node, goal):
         return node == goal
 
-    def _get_actions(self, node, frontier):
+    def _get_actions(self, path, frontier):
+        node = path.get_last_node()
         actions = []
 
         for connection in node.connections:
             neighbor = connection.end
-            should_add = True
 
-            for frontier_path in frontier:
-                if frontier_path.has_node(neighbor):
-                    should_add = False
-                    break
+            if path.has_node(neighbor):
+                continue
 
-            if should_add:
-                actions.append(Action(neighbor, connection.cost))
+            actions.append(Action(neighbor, connection.cost))
 
         return actions
 
@@ -39,7 +36,7 @@ class BreathFirstSearch(TreeSearch):
 def run():
     MapData.load_data()
 
-    breath_first_search = BreathFirstSearch(MapData.nodes)
+    breath_first_search = UniformCostSearch(MapData.nodes)
     path = breath_first_search.search(MapData.get_node('Arad'), MapData.get_node('Bucharest'))
 
     print('path: {}'.format(path))
